@@ -1,1 +1,1 @@
-import './create-photo-descriptions';
+import './other-users-photos.js';
