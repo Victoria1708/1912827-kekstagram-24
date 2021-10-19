@@ -14,4 +14,8 @@ function isStringHasProperLength(string, maxLength) {
   return string.length <= maxLength;
 }
 
-export {getRandomInteger, isStringHasProperLength};
+const isEscapeKey = (evt) => {
+  return evt.key === 'Escape';
+};
+
+export {getRandomInteger, isStringHasProperLength, isEscapeKey};

@@ -30,9 +30,9 @@ const MESSAGES = [
 ];
 
 function createPhotoDescriptions() {
-  const photoDescriptions = [];
+  const _photoDescriptions = [];
   for (let item = 1; item <= 25; item++) {
-    photoDescriptions.push({
+    _photoDescriptions.push({
       id: item,
       url: `photos/${item}.jpg`,
       description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
@@ -45,7 +45,9 @@ function createPhotoDescriptions() {
       },
     });
   }
-  return photoDescriptions;
+  return _photoDescriptions;
 }
 
-export {DESCRIPTIONS, NAMES, MESSAGES, createPhotoDescriptions};
+const photoDescriptions = createPhotoDescriptions();
+
+export {DESCRIPTIONS, NAMES, MESSAGES, createPhotoDescriptions, photoDescriptions};
