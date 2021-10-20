@@ -1,4 +1,4 @@
-function getRandomInteger(from, to) {
+const getRandomInteger = (from, to) => {
   from = Math.ceil(from);
   to = Math.floor(to);
   if (to < 0 || from < 0) {
@@ -8,10 +8,14 @@ function getRandomInteger(from, to) {
     return -1;
   }
   return Math.floor(Math.random() * (to - from + 1)) + from;
-}
+};
 
-function isStringHasProperLength(string, maxLength) {
+const isStringHasProperLength = (string, maxLength) => {
   return string.length <= maxLength;
-}
+};
 
-export {getRandomInteger, isStringHasProperLength};
+const isEscapeKey = (evt) => {
+  return evt.key === 'Escape';
+};
+
+export {getRandomInteger, isStringHasProperLength, isEscapeKey};

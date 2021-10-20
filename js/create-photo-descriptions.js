@@ -29,10 +29,10 @@ const MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
 ];
 
-function createPhotoDescriptions() {
-  const photoDescriptions = [];
+const createPhotoDescriptions = () => {
+  const descriptions = [];
   for (let item = 1; item <= 25; item++) {
-    photoDescriptions.push({
+    descriptions.push({
       id: item,
       url: `photos/${item}.jpg`,
       description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
@@ -45,7 +45,9 @@ function createPhotoDescriptions() {
       },
     });
   }
-  return photoDescriptions;
-}
+  return descriptions;
+};
 
-export {DESCRIPTIONS, NAMES, MESSAGES, createPhotoDescriptions};
+const photoDescriptions = createPhotoDescriptions();
+
+export {DESCRIPTIONS, NAMES, MESSAGES, createPhotoDescriptions, photoDescriptions};
