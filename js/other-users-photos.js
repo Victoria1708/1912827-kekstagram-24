@@ -19,7 +19,7 @@ photoDescriptions.forEach((description) => {
 
 photosContainer.appendChild(photosListFragment);
 
-window.onload = function () {
+window.onload = () => {
   const photosCollection = document.querySelectorAll('.picture');
   const photosArray = Array.from(photosCollection);
   photosArray.forEach((photo) => photo.addEventListener('click', showFullSize));
