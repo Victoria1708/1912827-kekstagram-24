@@ -10,9 +10,7 @@ const getRandomInteger = (from, to) => {
   return Math.floor(Math.random() * (to - from + 1)) + from;
 };
 
-const isStringHasProperLength = (string, maxLength) => {
-  return string.length <= maxLength;
-};
+const isStringHasProperLength = (string, maxLength) => string.length <= maxLength;
 
 const isEscapeKey = (evt) => {
   return evt.key === 'Escape';
