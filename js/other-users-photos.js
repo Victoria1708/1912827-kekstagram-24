@@ -12,7 +12,7 @@ photoDescriptions.forEach((description) => {
   img.setAttribute('src', description.url);
   img.setAttribute('data-id', description.id);
 
-  userPhoto.querySelector('.picture__comments').textContent = '1';
+  userPhoto.querySelector('.picture__comments').textContent = String(description.comments.length);
 
   photosListFragment.appendChild(userPhoto);
 });

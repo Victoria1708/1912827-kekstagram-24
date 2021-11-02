@@ -7,6 +7,7 @@ const closeUploadBtn = document.querySelector('#upload-cancel');
 const hashtagRegexp = new RegExp('^#[a-zA-Z0-9а-яА-ЯёЁщЩЇїІіЄєҐґ]{1,19}$');
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
+let hideEditForm = null;
 
 const validateHashtag = () => {
   const hashtagsList = hashtagsInput.value.toLowerCase().split(' ');
@@ -66,7 +67,24 @@ const validateComment = () => {
 //   document.querySelector('.img-upload__preview img').style.transform = `scale(${numberScale/100})`;
 // };
 
-const hideEditForm = () => {
+const onPopupEscKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    if (document.activeElement === hashtagsInput) {
+      return;
+    }
+    if (document.activeElement === commentInput) {
+      return;
+    }
+    evt.preventDefault();
+    hideEditForm();
+  }
+};
+
+const onCloseBtnClick = () => {
+  hideEditForm();
+};
+
+hideEditForm = () => {
   editPhotoForm.classList.add('hidden');
   document.body.classList.remove('modal-open');
   closeUploadBtn.removeEventListener('click', onCloseBtnClick);
@@ -92,20 +110,3 @@ const showEditForm = () => {
 };
 
 uploadControl.addEventListener('change', showEditForm);
-
-function onPopupEscKeydown(evt) {
-  if (isEscapeKey(evt)) {
-    if (document.activeElement === hashtagsInput) {
-      return;
-    }
-    if (document.activeElement === commentInput) {
-      return;
-    }
-    evt.preventDefault();
-    hideEditForm();
-  }
-}
-
-function onCloseBtnClick() {
-  hideEditForm();
-}
