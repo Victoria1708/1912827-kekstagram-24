@@ -1,8 +1,10 @@
 import {isEscapeKey} from './utils.js';
+import {sendData} from './api.js';
 
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE = 25;
 const MAX_SCALE = 100;
+const uploadImgForm = document.querySelector('.img-upload__form');
 const uploadControl = document.querySelector('#upload-file');
 const editPhotoForm = document.querySelector('.img-upload__overlay');
 const closeUploadBtn = document.querySelector('#upload-cancel');
@@ -204,6 +206,7 @@ hideEditForm = () => {
   formImage.value = '';
   formImage.className = '';
   formImage.style.filter = '';
+  document.querySelector('.img-upload__preview img').style.transform = '';
   sliderElement.parentElement.style.visibility = 'hidden';
   editPhotoForm.classList.add('hidden');
   document.body.classList.remove('modal-open');
@@ -229,3 +232,63 @@ const showEditForm = () => {
 };
 
 uploadControl.addEventListener('change', showEditForm);
+
+const outsideClickListener = (evt) => {
+  if (!evt.target.classList.contains('success__inner') || !evt.target.classList.contains('error__inner')) {
+    evt.target.classList.add('hidden');
+    evt.target.remove();
+    document.removeEventListener('click', outsideClickListener);
+  }
+};
+
+// When form was successfully submitted
+const onSuccess = () => {
+  hideEditForm();
+  const successMsgTemplate = document.querySelector('#success');
+  const successForm = successMsgTemplate.content.cloneNode(true);
+  document.body.append(successForm);
+  const closeBtn = document.querySelector('.success__button');
+
+  closeBtn.addEventListener('click', () => {
+    document.querySelector('.success').classList.add('hidden');
+    document.querySelector('.success').remove();
+  });
+
+  document.addEventListener('keydown', (evt) => {
+    isEscapeKey(evt) && document.querySelector('.success').classList.add('hidden');
+    document.querySelector('.success').remove();
+  });
+
+  document.addEventListener('click', outsideClickListener);
+};
+
+const onFail = () => {
+  hideEditForm();
+  const errorMsgTemplate = document.querySelector('#error');
+  const errorForm = errorMsgTemplate.content.cloneNode(true);
+  document.body.append(errorForm);
+  const closeBtn = document.querySelector('.error__button');
+
+  closeBtn.addEventListener('click', () => {
+    document.querySelector('.error').classList.add('hidden');
+    document.querySelector('.error').remove();
+  });
+
+  document.addEventListener('keydown', (evt) => {
+    isEscapeKey(evt) && document.querySelector('.error').classList.add('hidden');
+    document.querySelector('.error').remove();
+  });
+
+  document.addEventListener('click', outsideClickListener);
+};
+
+const setUserFormSubmit = () => {
+  uploadImgForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    sendData(onSuccess, onFail, new FormData(evt.target));
+  });
+};
+
+
+export {setUserFormSubmit, showEditForm};
