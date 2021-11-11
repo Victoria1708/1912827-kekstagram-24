@@ -1,30 +1,28 @@
-const getRandomInteger = (from, to) => {
-  from = Math.ceil(from);
-  to = Math.floor(to);
-  if (to < 0 || from < 0) {
-    return -1;
-  }
-  if (to <= from) {
-    return -1;
-  }
-  return Math.floor(Math.random() * (to - from + 1)) + from;
-};
-
-const generateUniqueNums = (amount) => {
-  const uniqueNums = [];
-  while (uniqueNums.length < amount) {
-    const r = Math.floor(Math.random() * 100) + 1;
-    if (uniqueNums.indexOf(r) === -1) {
-      uniqueNums.push(r);
-    }
-  }
-  return uniqueNums;
-};
-
-const isStringHasProperLength = (string, maxLength) => string.length <= maxLength;
+const ALERT_SHOW_TIME = 5000;
 
 const isEscapeKey = (evt) => {
   return evt.key === 'Escape';
 };
 
-export {getRandomInteger, isStringHasProperLength, isEscapeKey, generateUniqueNums};
+const showAlert = (message) => {
+  const alertContainer = document.createElement('div');
+  alertContainer.style.zIndex = 100;
+  alertContainer.style.position = 'absolute';
+  alertContainer.style.left = 0;
+  alertContainer.style.top = 0;
+  alertContainer.style.right = 0;
+  alertContainer.style.padding = '10px 3px';
+  alertContainer.style.fontSize = '30px';
+  alertContainer.style.textAlign = 'center';
+  alertContainer.style.backgroundColor = 'red';
+
+  alertContainer.textContent = message;
+
+  document.body.append(alertContainer);
+
+  setTimeout(() => {
+    alertContainer.remove();
+  }, ALERT_SHOW_TIME);
+};
+
+export {showAlert, isEscapeKey};
