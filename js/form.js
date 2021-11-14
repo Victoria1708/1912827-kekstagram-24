@@ -4,8 +4,11 @@ import {sendData} from './api.js';
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE = 25;
 const MAX_SCALE = 100;
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 const uploadImgForm = document.querySelector('.img-upload__form');
+const effectsPreviews = document.querySelectorAll('.effects__preview');
 const uploadControl = document.querySelector('#upload-file');
+const preview = document.querySelector('.setup-user-pic');
 const editPhotoForm = document.querySelector('.img-upload__overlay');
 const closeUploadBtn = document.querySelector('#upload-cancel');
 const hashtagRegexp = new RegExp('^#[a-zA-Z0-9а-яА-ЯёЁщЩЇїІіЄєҐґ]{1,19}$');
@@ -199,6 +202,7 @@ const onChangeEffect = (evt) => {
 };
 
 hideEditForm = () => {
+  preview.src = 'img/upload-default-image.jpg'; // set default src
   uploadControl.value = '';
   hashtagsInput.value = '';
   commentInput.value = '';
@@ -206,6 +210,9 @@ hideEditForm = () => {
   formImage.value = '';
   formImage.className = '';
   formImage.style.filter = '';
+  effectsPreviews.forEach((effectsPreview) => {
+    effectsPreview.style.backgroundImage = 'url(\'img/upload-default-image.jpg\')'; // set default background-img
+  });
   document.querySelector('.img-upload__preview img').style.transform = '';
   sliderElement.parentElement.style.visibility = 'hidden';
   editPhotoForm.classList.add('hidden');
@@ -220,6 +227,18 @@ hideEditForm = () => {
 };
 
 const showEditForm = () => {
+  const file = uploadControl.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    preview.src = URL.createObjectURL(file);
+    effectsPreviews.forEach((effectsPreview) => {
+      effectsPreview.style.backgroundImage = `url(${preview.src})`;
+    });
+  }
+
   editPhotoForm.classList.remove('hidden');
   document.body.classList.add('modal-open');
   hashtagsInput.addEventListener('change', validateHashtag);
@@ -289,6 +308,5 @@ const setUserFormSubmit = () => {
     sendData(onSuccess, onFail, new FormData(evt.target));
   });
 };
-
 
 export {setUserFormSubmit, showEditForm};
