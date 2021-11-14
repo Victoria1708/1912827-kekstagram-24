@@ -4,8 +4,10 @@ import {sendData} from './api.js';
 const MAX_COMMENT_LENGTH = 140;
 const MIN_SCALE = 25;
 const MAX_SCALE = 100;
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 const uploadImgForm = document.querySelector('.img-upload__form');
 const uploadControl = document.querySelector('#upload-file');
+const preview = document.querySelector('.setup-user-pic');
 const editPhotoForm = document.querySelector('.img-upload__overlay');
 const closeUploadBtn = document.querySelector('#upload-cancel');
 const hashtagRegexp = new RegExp('^#[a-zA-Z0-9а-яА-ЯёЁщЩЇїІіЄєҐґ]{1,19}$');
@@ -220,6 +222,15 @@ hideEditForm = () => {
 };
 
 const showEditForm = () => {
+  const file = uploadControl.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    preview.src = URL.createObjectURL(file);
+  }
+
   editPhotoForm.classList.remove('hidden');
   document.body.classList.add('modal-open');
   hashtagsInput.addEventListener('change', validateHashtag);
