@@ -29,7 +29,12 @@ const renderUsersPhotos = (photos) => {
       photosListFragment.appendChild(userPhoto);
     });
 
-  photosContainer.innerHTML = '';
+  const usersPhotos = photosContainer.querySelectorAll('.picture');
+
+  usersPhotos.forEach((img) => { // remove photos, but left upload form
+    photosContainer.removeChild(img);
+  });
+
   photosContainer.appendChild(photosListFragment);
 
   onUserPhotoClick();
