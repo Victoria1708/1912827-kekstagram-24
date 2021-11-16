@@ -114,7 +114,7 @@ const showFullSize = (event) => {
   visibleCommentsCounter += defaultComments.length;
   visibleCommentsCountWrapper.innerHTML = visibleCommentsCounter;
 
-  if (photoComments.length <= 5) {
+  if (photoComments.length <= limit) {
     document.querySelector('.comments-loader').classList.add('hidden');
   }
   renderPhotoComments(defaultComments); // show 5 first comments

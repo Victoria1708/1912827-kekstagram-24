@@ -20,10 +20,14 @@ const effectsList = document.querySelector('.effects__list');
 const formImage = document.querySelector('.img-upload__preview img');
 const sliderElement = document.querySelector('.effect-level__slider'); // slider
 const effectValueControl = document.querySelector('.effect-level__value'); //hidden input with slider value
-let numberScale = +document.querySelector('.scale__control--value').value.split('%').slice(0, 1).join('');
-let hideEditForm = null;
+const effectValues = document.querySelectorAll('input[name=effect]');
+const scaleInput = document.querySelector('.scale__control--value');
+const defaultEffect = effectValues[0];
+const radix = 10;
+let numberScale = parseInt(scaleInput.value, radix);
+let onHideEditForm = null;
 
-const validateHashtag = () => {
+const onValidateHashtag = () => {
   const hashtagsList = hashtagsInput.value.toLowerCase().split(' ');
   const uniqueList = [...new Set(hashtagsList)];
   const verifyHashtags = hashtagsList.map((hashTag) => hashtagRegexp.test(hashTag));
@@ -43,7 +47,7 @@ const validateHashtag = () => {
   hashtagsInput.reportValidity();
 };
 
-const validateComment = () => {
+const onValidateComment = () => {
   const valueLength = commentInput.value.length;
 
   if (valueLength > MAX_COMMENT_LENGTH) {
@@ -60,7 +64,7 @@ const onDecreaseBtn = () => {
     return;
   }
   numberScale -= MIN_SCALE;
-  document.querySelector('.scale__control--value').value = `${numberScale}%`;
+  scaleInput.value = `${numberScale}%`;
   document.querySelector('.img-upload__preview img').style.transform = `scale(${numberScale / 100})`;
 };
 
@@ -69,7 +73,7 @@ const onIncreaseBtn = () => {
     return;
   }
   numberScale += MIN_SCALE;
-  document.querySelector('.scale__control--value').value = `${numberScale}%`;
+  scaleInput.value = `${numberScale}%`;
   document.querySelector('.img-upload__preview img').style.transform = `scale(${numberScale / 100})`;
 };
 
@@ -82,12 +86,12 @@ const onPopupEscKeydown = (evt) => {
       return;
     }
     evt.preventDefault();
-    hideEditForm();
+    onHideEditForm();
   }
 };
 
 const onCloseBtnClick = () => {
-  hideEditForm();
+  onHideEditForm();
 };
 
 noUiSlider.create(sliderElement, {
@@ -201,15 +205,17 @@ const onChangeEffect = (evt) => {
   }
 };
 
-hideEditForm = () => {
+onHideEditForm = () => {
   preview.src = 'img/upload-default-image.jpg'; // set default src
   uploadControl.value = '';
   hashtagsInput.value = '';
   commentInput.value = '';
-  effectValueControl.value = '';
   formImage.value = '';
   formImage.className = '';
   formImage.style.filter = '';
+  numberScale = MAX_SCALE;
+  scaleInput.value = `${numberScale}%`;
+  effectValueControl.value = 'none';
   effectsPreviews.forEach((effectsPreview) => {
     effectsPreview.style.backgroundImage = 'url(\'img/upload-default-image.jpg\')'; // set default background-img
   });
@@ -219,14 +225,15 @@ hideEditForm = () => {
   document.body.classList.remove('modal-open');
   closeUploadBtn.removeEventListener('click', onCloseBtnClick);
   document.removeEventListener('keydown', onPopupEscKeydown);
-  hashtagsInput.removeEventListener('change', validateHashtag);
-  commentInput.removeEventListener('input', validateComment);
+  hashtagsInput.removeEventListener('change', onValidateHashtag);
+  commentInput.removeEventListener('input', onValidateComment);
   decreasePhotoBtn.removeEventListener('click', onDecreaseBtn);
   increasePhotoBtn.removeEventListener('click', onIncreaseBtn);
   effectsList.removeEventListener('click', onChangeEffect);
+  defaultEffect.checked = true;
 };
 
-const showEditForm = () => {
+const onShowEditForm = () => {
   const file = uploadControl.files[0];
   const fileName = file.name.toLowerCase();
 
@@ -241,64 +248,88 @@ const showEditForm = () => {
 
   editPhotoForm.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  hashtagsInput.addEventListener('change', validateHashtag);
-  commentInput.addEventListener('input', validateComment);
-  closeUploadBtn.addEventListener('click', hideEditForm);
+  hashtagsInput.addEventListener('change', onValidateHashtag);
+  commentInput.addEventListener('input', onValidateComment);
+  closeUploadBtn.addEventListener('click', onHideEditForm);
   document.addEventListener('keydown', onPopupEscKeydown);
   decreasePhotoBtn.addEventListener('click', onDecreaseBtn);
   increasePhotoBtn.addEventListener('click', onIncreaseBtn);
   effectsList.addEventListener('click', onChangeEffect);
 };
 
-uploadControl.addEventListener('change', showEditForm);
+uploadControl.addEventListener('change', onShowEditForm);
 
-const outsideClickListener = (evt) => {
+const onOutsideClick = (evt) => {
   if (!evt.target.classList.contains('success__inner') || !evt.target.classList.contains('error__inner')) {
-    evt.target.classList.add('hidden');
-    evt.target.remove();
-    document.removeEventListener('click', outsideClickListener);
+    const backgroundMsg = evt.target.closest('.success') || evt.target.closest('.error');
+
+    if(backgroundMsg){
+      backgroundMsg.classList.add('hidden');
+      backgroundMsg.remove();
+    }
+    document.removeEventListener('click', onOutsideClick);
   }
 };
 
 // When form was successfully submitted
 const onSuccess = () => {
-  hideEditForm();
+  onHideEditForm();
   const successMsgTemplate = document.querySelector('#success');
   const successForm = successMsgTemplate.content.cloneNode(true);
   document.body.append(successForm);
   const closeBtn = document.querySelector('.success__button');
 
-  closeBtn.addEventListener('click', () => {
+  const onRemoveSuccess = () => {
     document.querySelector('.success').classList.add('hidden');
     document.querySelector('.success').remove();
-  });
+
+    closeBtn.removeEventListener('click', onRemoveSuccess);
+    document.removeEventListener('click', onOutsideClick);
+  };
+  closeBtn.addEventListener('click', onRemoveSuccess);
 
   document.addEventListener('keydown', (evt) => {
-    isEscapeKey(evt) && document.querySelector('.success').classList.add('hidden');
-    document.querySelector('.success').remove();
-  });
+    const isEscapePress = isEscapeKey(evt);
+    const successMsg = document.querySelector('.success');
 
-  document.addEventListener('click', outsideClickListener);
+    if (isEscapePress && successMsg) {
+      successMsg.classList.add('hidden');
+      document.querySelector('.success').remove();
+      document.removeEventListener('click', onOutsideClick);
+    }
+
+  });
+  document.addEventListener('click', onOutsideClick);
 };
 
 const onFail = () => {
-  hideEditForm();
+  onHideEditForm();
   const errorMsgTemplate = document.querySelector('#error');
   const errorForm = errorMsgTemplate.content.cloneNode(true);
   document.body.append(errorForm);
   const closeBtn = document.querySelector('.error__button');
 
-  closeBtn.addEventListener('click', () => {
-    document.querySelector('.error').classList.add('hidden');
-    document.querySelector('.error').remove();
-  });
+  const onRemoveFail = () => {
+    document.querySelector('.success').classList.add('hidden');
+    document.querySelector('.success').remove();
+    closeBtn.removeEventListener('click', onRemoveFail);
+    document.removeEventListener('click', onOutsideClick);
+  };
+
+  closeBtn.addEventListener('click', onRemoveFail);
 
   document.addEventListener('keydown', (evt) => {
-    isEscapeKey(evt) && document.querySelector('.error').classList.add('hidden');
-    document.querySelector('.error').remove();
+    const isEscapePress = isEscapeKey(evt);
+    const successMsg = document.querySelector('.error');
+
+    if (isEscapePress && successMsg) {
+      successMsg.classList.add('hidden');
+      document.querySelector('.error').remove();
+      document.removeEventListener('click', onOutsideClick);
+    }
   });
 
-  document.addEventListener('click', outsideClickListener);
+  document.addEventListener('click', onOutsideClick);
 };
 
 const setUserFormSubmit = () => {
@@ -309,4 +340,4 @@ const setUserFormSubmit = () => {
   });
 };
 
-export {setUserFormSubmit, showEditForm};
+export {setUserFormSubmit, onShowEditForm};
